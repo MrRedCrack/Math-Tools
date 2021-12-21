@@ -81,7 +81,7 @@ while True:
         ym=Fraction(sumy,n)
         xm=Fraction(sumx,n)
         a=ym-b*xm
-        print(f"a = sigma(y)/n - b * sigma(x)/n")
+        print(f"a = Sigma(y)/n - b * Sigma(x)/n")
         print(f"  = {int(sumy)}/{n} - ({b} * {int(sumx)}/{n})")
         print(f"  = {a}")
         print('')
@@ -93,7 +93,7 @@ while True:
         ym=sumy/n
         xm=sumx/n
         a=round(ym-b*xm,4)
-        print(f"a = sigma(y)/n - b * sigma(x)/n")
+        print(f"a = Sigma(y)/n - b * Sigma(x)/n")
         print(f"  = {int(sumy)}/{n} - ({b} * {int(sumx)}/{n})")
         print(f"  = {a}")
         print('')
