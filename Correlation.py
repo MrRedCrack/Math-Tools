@@ -18,7 +18,7 @@ def checkr(r):
 while True:
     xs,ys=[],[]
     opt=input("Given: ")
-    if not opt:
+    if not opt or len(opt)>5:
         x=input("xs: ")
         xs=[int(i) for i in x.split(" ")]
         y=input("ys: ")
@@ -31,7 +31,7 @@ while True:
         sumy2=sum([p**2 for p in ys])
         n=len(xs)
         
-    elif opt:
+    else:
         n=int(input("n: "))
         sumx=int(input("sum x: "))
         sumy=int(input("sum y: "))
