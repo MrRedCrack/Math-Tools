@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt,floor,ceil
 from fractions import Fraction
 from collections import Counter
 
@@ -21,17 +21,30 @@ def midpoint(l,third=False):
     blanklist[Qindex2]=blanklist[Qindex2].replace(" ",'^')
     return ret
 
-while True:
-    opt=input("[Ungrouped/Grouped] Data: ")
-    if opt=='u':
-        opt=input("[Population/Sample]: ")
-        path=['c',opt]
-        print(f"Ungrouped Data ({'Population' if opt=='p' else 'Sample'}).")
+def qrt(quartlist,th):
+    Ai=floor(th)-1
+    Bi=ceil(th)-1
+    A=quartlist[Ai]
+    B=quartlist[Bi]
+    if A==B:
+        txt=str(A)
     else:
-        opt1=input("[Ungrouped/Grouped] Freq dist.: ")
-        opt2=input("[Population/Sample]: ")
+        txt=f"({A}+{B})/2 = {(A+B)/2}"
+    return txt
+
+
+
+while True:
+    opt=input("[U]ngrouped/Grouped Data: ")
+    if opt=='u':
+        opt=input("[P]opulation/Sample: ")
+        path=['c',opt]
+        print(f"\nUngrouped Data ({'Population' if opt=='p' else 'Sample'}).")
+    else:
+        opt1=input("[U]ngrouped/Grouped Freq dist.: ")
+        opt2=input("[P]opulation/Sample: ")
         path=[opt1,opt2]
-        print((f"Grouped Data - {'Ungrouped' if opt1=='u' else 'Grouped'} frequency distribution ({'Population' if opt2=='p' else 'Sample'})."))
+        print((f"\nGrouped Data - {'Ungrouped' if opt1=='u' else 'Grouped'} frequency distribution ({'Population' if opt2=='p' else 'Sample'})."))
     print('')
     if path[0]=='c': # UNGROUPED DATA
         given=input("Given: ")
@@ -123,7 +136,7 @@ while True:
         
             # Std dev
             print('\nStandard deviation [Population] >>>')
-            print(f'sigma = sqrt({var}) = {sqrt(var):.4f}')
+            print(f'sigma = sqrt({var}) = {round(sqrt(var),4)}')
         
         else: #Sample
             # Mean
@@ -153,12 +166,101 @@ while True:
         
             # Std dev
             print('\nStandard deviation [Sample] >>>')
-            print(f's = sqrt({var}) = {sqrt(var):.4f}')
+            print(f's = sqrt({var}) = {round(sqrt(var),4)}')
 
         print('\n')
 
     elif path[0]=='u': # UNGROUPED FREQUENCY DISTRIBUTION
-        pass
+        given=input("Given: ")
+        if given=='' or len(given)>5:
+            x=input("xs: ")
+            xs=[float(i) if '.' in str(i) else int(i) for i in x.split(" ")]
+            f=input("fs: ")
+            fs=[int(i) for i in f.split(" ")]
+            sumx=int(p) if (p:=sum(xs))%1==0 else round(p,4)
+            sumf=sum(fs)
+            sumfx=sum(fs[i]*round(xs[i],4) for i in range(len(xs)))
+            sumfx=round(sumfx,4) if sumfx%2!=0 else int(sumfx)
+            sumx2=sum(i**2 for i in xs)
+            sumx2=round(sumx2,4) if sumx2%1!=0 else int(sumx2)
+            sumfx2=round(p,4) if (p:=sum(fs[i]*xs[i]**2 for i in range(len(xs))))%1!=0 else int(p)
+            print('')
+
+            o="^8"
+            header=f"{'x':{o}}|{'f':{o}}|{'c-f':{o}}|{'fx':{o}}|{'x^2':{o}}"
+            print(header)
+            cmlf=0
+            for i,x in enumerate(xs):
+                cmlf+=fs[i]
+                fx=int(p) if (p:=x*fs[i])%1==0 else round(p,4)
+                x2=int(p) if (p:=x**2)%1==0 else round(p,4)
+                print(f"{x:{o}}|{fs[i]:{o}}|{cmlf:{o}}|{fx:{o}}|{x2:{o}}")
+            print('-'*len(header))
+            print(f"{sumx:{o}}|{sumf:{o}}|{'':{o}}|{sumfx:{o}}|{sumx2:{o}}")
+            print('')
+
+            quartlist=sum([[xs[i]]*fs[i] for i in range(len(xs))],[])
+            print(f"Q1 pos = ({sumf}+1)/4 = {(sumf+1)/4}th")
+            print(f" => Q1 = {qrt(quartlist,(sumf+1)/4)}")
+            print(f"Q2 pos = ({sumf}+1)/2 = {(sumf+1)/2}th")
+            print(f" => Q2 = {qrt(quartlist,(sumf+1)/2)}")
+            print(f"Q3 pos = 3({sumf}+1)/4 = {3*(sumf+1)/4}th")
+            print(f" => Q3 = {qrt(quartlist,3*(sumf+1)/4)}")
+            print('')
+
+
+        if path[1]=='p': # Population
+            # Mean
+            mean=Fraction(sumfx,sumf) if '.' not in str(sumfx) else round(sumfx/sumf,4)
+            print('Mean [Population] >>>')
+            print(f"miu = Sigma(fx)/Sigma(f)")
+            print(f"    = {sumfx}/{sumf}")
+            if str(mean)!=f"{sumfx}/{sumf}":
+                print(f"    = {mean}")
+            if mean%1!=0:
+                print(f"    = {round(sumfx/sumf,4)}")
+
+            # Variance
+            mean2=round(p,4) if (p:=mean**2)%1!=0 else int(p)
+            var=Fraction(sumfx2,sumf)-mean2 if sumfx2%1==0 else round((sumfx2/sumf)-mean2,4)
+            print('\nVariance [Population] >>>')
+            print(f"sigma^2 = Sigma(fm^2)/Sigma(f) - miu^2")
+            print(f"        = {sumfx2}/{sumf} - ({sumfx}/{sumf})^2")
+            print(f"        = {Fraction(sumfx2,sumf) if sumfx2%1==0 else round((sumfx2/sumf),4)} - {mean2}")
+            print(f"        = {var}")
+            if '/' in str(var):
+                print(f"        = {round(float(var),4)}")
+
+            print('\nStandard deviation [Population] >>>')
+            print(f"sigma = sqrt({var}) = {round(sqrt(var),4)}")
+            print('')
+        
+        else: # Sample
+            # Mean
+            mean=Fraction(sumfx,sumf) if '.' not in str(sumfx) else round(sumfx/sumf,4)
+            print('Mean [Sample] >>>')
+            print(f"x-bar = Sigma(fx)/Sigma(f)")
+            print(f"      = {sumfx}/{sumf}")
+            if str(mean)!=f"{sumfx}/{sumf}":
+                print(f"      = {mean}")
+            if mean%1!=0:
+                print(f"      = {round(sumfx/sumf,4)}")
+
+            # Variance
+            mean2=p if (p:=mean**2)%1!=0 else int(p)
+            var=Fraction(p,sumf-1) if (p:=sumfx2-sumf*mean2)%1==0 else round(float(p/(sumf-1)),4)
+            print('\nVariance [Sample] >>>')
+            print(f"s^2 = (Sigma(fx^2) - Sigma(f) (x-bar^2)) / (Sigma(f)-1)")
+            print(f"    = ({sumfx2} - ({sumf}) ({mean})^2) / ({sumf}-1)")
+            if (p:=sumfx2-sumf*mean2)%1==0:
+                print(f"    = {int(p)}/{sumf-1}")
+            print(f"    = {var}")
+            if '/' in str(var):
+                print(f"    = {round(float(var),4)}")
+
+            print('\nStandard deviation [Sample] >>>')
+            print(f"sigma = sqrt({var}) = {round(sqrt(var),4)}")
+            print('')
 
     else: # GROUPED FREQUENCY DISTRIBUTION
         pass

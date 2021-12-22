@@ -38,18 +38,20 @@ while True:
         print('')
         #while (opt:=input("Option: "))!="":
         Ex=sum([num*Pxs[i] for i,num in enumerate(xs)])
+        Ex=round(Ex,4) if '.' in str(Ex) else Ex
         Varx=sum([num**2*Pxs[i] for i,num in enumerate(xs)])-Ex**2
+        Varx=round(Varx,4) if '.' in str(Varx) else Varx
             #if opt.upper()=="E":
-        print(f"E(X) = "+" + ".join([f"{num}*{Pxs[i]}" for i,num in enumerate(xs)]))
-        print(f"     = {Ex if '/' not in str(Ex) else str(Ex):{'.4f' if '/' not in str(Ex) else 0}}")
+        print(f"E(X) = "+" + ".join([f"{num}({Pxs[i]})" for i,num in enumerate(xs)]))
+        print(f"     = {round(Ex,4) if '.' in str(Ex) else str(Ex)}")
         print('')
             #if opt.upper()=="V":
         print(f"Var(X) = E(X^2) - (E(X))^2")
-        print(f"       = ("+" + ".join([f"{num}^2*{Pxs[i]}" for i,num in enumerate(xs)])+f") - {Ex}^2")
-        print(f"       = {Varx if '/' not in str(Varx) else str(Varx):{'.4f' if '/' not in str(Varx) else 0}}")
+        print(f"       = ("+" + ".join([f"{num}^2 ({Pxs[i]})" for i,num in enumerate(xs)])+f") - {Ex}^2")
+        print(f"       = {round(Varx,4) if '.' in str(Varx) else str(Varx)}")
         print('')
             #if opt.upper()=="S":
-        print(f"sqrt(Var(X)) = {sqrt(Varx):.4f}")
+        print(f"sqrt({Varx}) = {round(sqrt(Varx),4)}")
         print('')
     if input("Continue? ").upper()=="N":
         break
