@@ -32,7 +32,21 @@ def qrt(quartlist,th):
         txt=f"({A}+{B})/2 = {(A+B)/2}"
     return txt
 
-
+def grpqrt(qrt):
+    qrt=[int(i) for i in qrt.split("/")]
+    pos=sumf*qrt[0]/qrt[1]
+    pos=pos if pos%1!=0 else int(pos)
+    index=0
+    while True:
+        if pos<=cfs[index]:
+            break
+        index+=1
+    Q=bs[index][0]+(pos-(cfs[index-1] if index!=0 else 0))/fs[index]*(bs[index][1]-bs[index][0])
+    Q=round(Q,4) if Q%1!=0 else int(Q)
+    Qpostxt=f"{qrt[0]}/{qrt[1]} * {sumf} = {pos}th"
+    csize=A if (A:=bs[index][1]-bs[index][0])%1!=0 else int(A)
+    Qtxt=f"{bs[index][0]} + ({pos} - {(cfs[index-1] if index!=0 else 0)})/{fs[index]} * {csize}"
+    return Qpostxt,Qtxt,Q
 
 while True:
     opt=input("[U]ngrouped/Grouped Data: ")
@@ -208,7 +222,6 @@ while True:
             print(f" => Q3 = {qrt(quartlist,3*(sumf+1)/4)}")
             print('')
 
-
         if path[1]=='p': # Population
             # Mean
             mean=Fraction(sumfx,sumf) if '.' not in str(sumfx) else round(sumfx/sumf,4)
@@ -263,5 +276,205 @@ while True:
             print('')
 
     else: # GROUPED FREQUENCY DISTRIBUTION
-        pass
+        given=input("Given [S]ame/Different class size: ")
+        if given=='s':
+            c0=input("[lower limit 1] [upper limit 1] [next lower limit]: ")
+            cs0=[int(A) if (A:=float(i))%1==0 else A for i in c0.split(" ")]
+            f=input("fs: ")
+            interval=cs0[2]-cs0[1]
+            width=cs0[1]-cs0[0]
+            size=width+interval
+            hinterval=interval/2
 
+            if f:
+                fs=[int(i) for i in f.split(" ")] # Frequencies: fs
+            else:
+                data=input("Data: ")
+                datas=[eval(i) for i in data.split(" ")]
+                fs=[0]
+                upperbs=[cs0[1]+hinterval]
+                for i in datas:
+                    index=0
+                    while True:
+                        chk=upperbs[index]
+                        if i<chk:
+                            fs[index]+=1
+                            break
+                        if index+1==len(fs):
+                            fs.append(0)
+                            upperbs.append(upperbs[index]+size)
+                        index+=1
+            sumf=sum(fs)
+
+            # Classes: cs
+            cs=[[cs0[0],cs0[1]]]
+            start=cs0[2]
+            for i in range(len(fs)-1):
+                cs.append([start,start+width])
+                start+=size
+
+            # Boundaries: bs
+            bs=[[ A if (A:=x[0]-hinterval)%1!=0 else int(A), B if (B:=x[1]+hinterval)%1!=0 else int(B)] for x in cs]
+
+            # Mid points: ms
+            ms=[A if (A:=(x[0]+x[1])/2)%1!=0 else int(A) for x in cs]
+
+            # Cumulative frequencies: cfs
+            cf=0
+            cfs=[]
+            for i in fs:
+                cf+=i
+                cfs.append(cf)
+
+            # fms
+            fms=[A if (A:=round(fs[i]*ms[i],4))%1!=0 else int(A) for i in range(len(fs))]
+            sumfms=A if (A:=round(sum(fms),4))%1!=0 else int(A)
+
+            # f(m^2)s
+            fm2s=[A if (A:=round(fs[i]*ms[i]**2,4))%1!=0 else int(A) for i in range(len(fs))]
+            sumfm2s=A if (A:=round(sum(fm2s),4))%1!=0 else int(A)
+
+            print(f'')
+            print(f"{'Class':^7}|{'Boundaries':^12}|{'m':^7}|{'f':^5}|{'Cumulative f':^14}|{'fm':^7}|{'fm^2':^10}Class size = {size}")
+            print(f"{'':-^7}+{'':-^12}+{'':-^7}+{'':-^5}+{'':-^14}+{'':-^7}+{'':-^10}")
+            for i in range(len(fs)):
+                print(f"{'{}-{}'.format(cs[i][0],cs[i][1]):^7}|{'{}-{}'.format(bs[i][0],bs[i][1]):^12}|{ms[i]:^7}|{fs[i]:^5}|{cfs[i]:^14}|{fms[i]:^7}|{fm2s[i]:^10}")
+            print(f"{'':-^7}+{'':-^12}+{'':-^7}+{'':-^5}+{'':-^14}+{'':-^7}+{'':-^10}")
+            print(f"{'':^7}|{'':^12}|{'':^7}|{sumf:^5}|{'':^14}|{sumfms:^7}|{sumfm2s:^10}")
+            print('')
+
+            if input('Drawing histogram/polygon? ')!='':
+                print('')
+                rfs=[round(i/sumf,4) for i in fs]
+                ps=[round(i*100,2) for i in rfs]
+                print(f"{'Class':^7}|{'Boundaries':^12}|{'m':^7}|{'f':^5}|{'relative f':^12}|{'percentage':^13}")
+                print(f"{'':-^7}+{'':-^12}+{'':-^7}+{'':-^5}+{'':-^12}+{'':-^13}")
+                for i in range(len(fs)):
+                    print(f"{'{}-{}'.format(cs[i][0],cs[i][1]):^7}|{'{}-{}'.format(bs[i][0],bs[i][1]):^12}|{ms[i]:^7}|{fs[i]:^5}|{rfs[i]:^12}|{ps[i]:^13}")
+                print('')
+                print(f"Polygon start / end >>> {ms[0]-size} / {ms[-1]+size}")
+                print('')
+        else:
+            c0=input("[ll 1] [ul 1] [ll 2] [ul 2] [ul x].. : ")
+            cs0=[int(A) if (A:=float(i))%1==0 else A for i in c0.split(" ")]
+            f=input("fs: ")
+            interval=cs0[2]-cs0[1]
+            hinterval=interval/2
+
+            # Classes
+            cs=[[cs0[0],cs0[1]],[cs0[2],cs0[3]]]
+            lltemp=cs0[3]+interval
+            for x in cs0[4:]:
+                if lltemp%1==0:
+                    lltemp=int(lltemp)
+                cs.append([lltemp,x])
+                lltemp+=interval
+            
+            fs=[int(i) for i in f.split(" ")]
+            
+            # Boundaries
+            bs=[[A if (A:=x[0]-hinterval)%1!=0 else int(A),B if (B:=x[1]+hinterval)%1!=0 else B] for x in cs]
+
+            # Class sizes
+            Cs=[A if (A:=x[1]-x[0])%1!=0 else int(A) for x in bs]
+
+            # Mid points
+            ms=[A if (A:=sum(x)/2)%1!=0 else int(A) for x in cs]
+
+            # Cumulative frequencies: cfs
+            cf=0
+            cfs=[]
+            for i in fs:
+                cf+=i
+                cfs.append(cf)
+
+            # Frequency densities: fds
+            fds=[A if (A:=fs[i]/Cs[i])%1!=0 else int(A) for i in range(len(fs))]
+
+            # fms
+            fms=[A if (A:=round(fs[i]*ms[i],4))%1!=0 else int(A) for i in range(len(fs))]
+            sumfms=A if (A:=round(sum(fms),4))%1!=0 else int(A)
+
+            # f(m^2)s
+            fm2s=[A if (A:=round(fs[i]*ms[i]**2,4))%1!=0 else int(A) for i in range(len(fs))]
+            sumfm2s=A if (A:=round(sum(fm2s),4))%1!=0 else int(A)
+
+        if input("Drawing ogive? ")!='':
+            print('')
+            crfs=[round(A,4) if (A:=i/sumf)%1!=0 else int(A) for i in cfs]
+            cps=[round(A,4) if (A:=i*100)%1!=0 else int(A) for i in crfs]
+            pc=[f"<{cs[0][0]-interval}",f"<{bs[0][0]}",0,0,0]
+            print(f"{'Upper':^10}|{'Cumulative':^12}|{'Cumulative':^12}|{'Cumulative':^13}")
+            print(f"{'Boundaries':^10}|{'f':^12}|{'relative f':^12}|{'percentages':^13}")
+            print(f"{'':-^10}+{'':-^12}+{'':-^12}+{'':-^13}")
+            print(f"{pc[1]:^10}|{pc[2]:^12}|{pc[3]:^12}|{pc[4]:^13}")
+            for i in range(len(cfs)):
+                print(f"{'{}{}'.format('<',bs[i][1]):^10}|{cfs[i]:^12}|{crfs[i]:^12}|{cps[i]:^13}")
+        print('')
+        Q1pos,Q1txt,Q1=grpqrt('1/4')
+        print(f"Q1 pos = {Q1pos}")
+        print(f"Q1 = {Q1txt}")
+        print(f"   = {Q1}\n")
+        Q2pos,Q2txt,Q2=grpqrt('1/2')
+        print(f"Q2 pos = {Q2pos}")
+        print(f"Q2 = {Q2txt}")
+        print(f"   = {Q2} (Median)\n")
+        Q3pos,Q3txt,Q3=grpqrt('3/4')
+        print(f"Q3 pos = {Q3pos}")
+        print(f"Q3 = {Q3txt}")
+        print(f"   = {Q3}\n")
+
+        if given=='s':
+            # Mode
+            modeindex=fs.index(max(fs))
+            Lm=bs[modeindex][0]
+            f_m=fs[modeindex]
+            f_b=0 if modeindex==0 else fs[modeindex-1]
+            f_a=0 if modeindex+1==len(fs) else fs[modeindex+1]
+            mode=round(Lm+(f_m-f_b)/(2*f_m-f_a-f_b)*size,4)
+            print("Mode [Equal class width] >>>")
+            print(f"m = {bs[modeindex][0]} + ({f_m}-{f_b})/(({f_m}-{f_b})+({f_m}-{f_a})) * {size}")
+            print(f"  = {mode}")
+        else:
+            pass
+        print('')
+
+        print('-'*50)
+        if path[1]=='p':
+            # Mean
+            mean=round(sumfms/sumf,4)
+            print(f"Mean [Population] >>>")
+            print(f"miu = Sigma(fm)/Sigma(f)")
+            print(f"    = {sumfms}/{sumf}")
+            print(f"    = {mean}")
+
+            # Variance
+            mean2=(sumfms/sumf)**2
+            var=round(sumfm2s/sumf-mean2,4)
+            print(f"\nVariance [Population] >>>")
+            print(f"sigma^2 = Sigma(fm^2)/Sigma(f) - miu^2")
+            print(f"        = {sumfm2s}/{sumf} - ({sumfms}/{sumf})^2")
+            print(f"        = {var}")
+
+            # Std dev
+            print(f"\nStandard deviation [Population] >>>")
+            print(f"sigma = sqrt({var}) = {round(sqrt(var),4)}")
+        else:
+            # Mean
+            mean=round(sumfms/sumf,4)
+            print(f"Mean [Sample] >>>")
+            print(f"x-bar = Sigma(fm)/Sigma(f)")
+            print(f"      = {sumfms}/{sumf}")
+            print(f"      = {mean}")
+
+            # Variance
+            var=round((sumfm2s-(sumfms**2)/sumf)/(sumf-1),4)
+            print(f"\nVariance [Sample] >>>")
+            print(f"s^2 = (Sigma(fm^2) - Sigma(fm)^2/Sigma(f)) / Sigma(f) - 1")
+            print(f"    = ({sumfm2s}-{sumfms}^2/{sumf})/{sumf} - ({sumf}-1)")
+            print(f"    = {var}")
+
+            # Std dev
+            print(f"\nStandard deviation [Population] >>>")
+            print(f"sigma = sqrt({var}) = {round(sqrt(var),4)}")
+        print('')

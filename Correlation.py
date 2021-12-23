@@ -33,11 +33,11 @@ while True:
         
     else:
         n=int(input("n: "))
-        sumx=int(x) if float(x:=input("sum x:"))%1==0 else float(x)
-        sumy=int(x) if float(x:=input("sum y:"))%1==0 else float(x)
-        sumxy=int(x) if float(x:=input("sum xy:"))%1==0 else float(x)
-        sumx2=int(x) if float(x:=input("sum x2:"))%1==0 else float(x)
-        sumy2=int(x) if float(x:=input("sum y2:"))%1==0 else float(x)
+        sumx=int(x) if float(x:=input("sum x: "))%1==0 else float(x)
+        sumy=int(x) if float(x:=input("sum y: "))%1==0 else float(x)
+        sumxy=int(x) if float(x:=input("sum xy: "))%1==0 else float(x)
+        sumx2=int(x) if float(x:=input("sum x2: "))%1==0 else float(x)
+        sumy2=int(x) if float(x:=input("sum y2: "))%1==0 else float(x)
     
     o="^8"
     header=f"{'x':{o}}|{'y':{o}}|{'xy':{o}}|{'x^2':{o}}|{'y^2':{o}}"
@@ -70,13 +70,16 @@ while True:
     print("Regression calculation:")
     if S_XY%1==0 and S_XX%1==0:
         b=Fraction(int(S_XY),int(S_XX)) 
-        print(f"b = S_XY/S_XX = {b}")
+        print(f"b = S_XY/S_XX = {b} = {round(float(b),4)}")
+        print('')
         ym=Fraction(sumy,n)
         xm=Fraction(sumx,n)
         a=ym-b*xm
         print(f"a = Sigma(y)/n - b * Sigma(x)/n")
         print(f"  = {int(sumy)}/{n} - ({b} * {int(sumx)}/{n})")
         print(f"  = {a}")
+        if '/' in str(a):
+            print(f"  = {round(float(a),4)}")
         print('')
         print(f"regression line: y-cap = {a} + {b}x")
     else:
