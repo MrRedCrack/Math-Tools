@@ -28,9 +28,11 @@ def qrt(quartlist,th):
     B=quartlist[Bi]
     if A==B:
         txt=str(A)
+        q=A
     else:
         txt=f"({A}+{B})/2 = {(A+B)/2}"
-    return txt
+        q=(A+B)/2
+    return txt,q
 
 def grpqrt(qrt):
     qrt=[int(i) for i in qrt.split("/")]
@@ -105,6 +107,17 @@ while True:
             print(f"Upper fence = {Q3} + 1.5({Q3-Q1}) = {ufence}")
             if any(outliers:=[str(x) for x in data if x<lfence or x>ufence]):
                 print(f"Outlier(s): {', '.join(outliers)}")
+            Q12=median-Q1
+            Q23=Q3-median
+            if Q12>Q23:
+                print(f"{Q12} > {Q23}")
+                print("Q2-Q1 > Q3-Q2 Skewed to the left")
+            elif Q12<Q23:
+                print(f"{Q12} < {Q23}")
+                print("Q2-Q1 < Q3-Q2 Skewed to the right")
+            else:
+                print(f"{Q12} = {Q23}")
+                print("Q2-Q1 = Q3-Q2 Symmetrical distribution")
             print('')
 
             print(f"n: {n}")
@@ -191,36 +204,65 @@ while True:
             xs=[float(i) if '.' in str(i) else int(i) for i in x.split(" ")]
             f=input("fs: ")
             fs=[int(i) for i in f.split(" ")]
-            sumx=int(p) if (p:=sum(xs))%1==0 else round(p,4)
-            sumf=sum(fs)
-            sumfx=sum(fs[i]*round(xs[i],4) for i in range(len(xs)))
-            sumfx=round(sumfx,4) if sumfx%2!=0 else int(sumfx)
-            sumx2=sum(i**2 for i in xs)
-            sumx2=round(sumx2,4) if sumx2%1!=0 else int(sumx2)
-            sumfx2=round(p,4) if (p:=sum(fs[i]*xs[i]**2 for i in range(len(xs))))%1!=0 else int(p)
-            print('')
+        else:
+            data=input("Data: ")
+            datas=[float(i) if '.' in str(i) else int(i) for i in data.split(" ")]
+            xs,fs=[],[]
+            while datas:
+                r=datas[0]
+                xs.append(r)
+                fs.append(datas.count(r))
+                datas=[s for s in datas if s!=r]
 
-            o="^8"
-            header=f"{'x':{o}}|{'f':{o}}|{'c-f':{o}}|{'fx':{o}}|{'x^2':{o}}"
-            print(header)
-            cmlf=0
-            for i,x in enumerate(xs):
-                cmlf+=fs[i]
-                fx=int(p) if (p:=x*fs[i])%1==0 else round(p,4)
-                x2=int(p) if (p:=x**2)%1==0 else round(p,4)
-                print(f"{x:{o}}|{fs[i]:{o}}|{cmlf:{o}}|{fx:{o}}|{x2:{o}}")
-            print('-'*len(header))
-            print(f"{sumx:{o}}|{sumf:{o}}|{'':{o}}|{sumfx:{o}}|{sumx2:{o}}")
-            print('')
+        sumx=int(p) if (p:=sum(xs))%1==0 else round(p,4)
+        sumf=sum(fs)
+        sumfx=sum(fs[i]*round(xs[i],4) for i in range(len(xs)))
+        sumfx=round(sumfx,4) if sumfx%2!=0 else int(sumfx)
+        sumx2=sum(i**2 for i in xs)
+        sumx2=round(sumx2,4) if sumx2%1!=0 else int(sumx2)
+        sumfx2=round(p,4) if (p:=sum(fs[i]*xs[i]**2 for i in range(len(xs))))%1!=0 else int(p)
+        print('')
 
-            quartlist=sum([[xs[i]]*fs[i] for i in range(len(xs))],[])
-            print(f"Q1 pos = ({sumf}+1)/4 = {(sumf+1)/4}th")
-            print(f" => Q1 = {qrt(quartlist,(sumf+1)/4)}")
-            print(f"Q2 pos = ({sumf}+1)/2 = {(sumf+1)/2}th")
-            print(f" => Q2 = {qrt(quartlist,(sumf+1)/2)}")
-            print(f"Q3 pos = 3({sumf}+1)/4 = {3*(sumf+1)/4}th")
-            print(f" => Q3 = {qrt(quartlist,3*(sumf+1)/4)}")
-            print('')
+        o="^8"
+        header=f"{'x':{o}}|{'f':{o}}|{'c-f':{o}}|{'fx':{o}}|{'x^2':{o}}"
+        print(header)
+        cmlf=0
+        for i,x in enumerate(xs):
+            cmlf+=fs[i]
+            fx=int(p) if (p:=x*fs[i])%1==0 else round(p,4)
+            x2=int(p) if (p:=x**2)%1==0 else round(p,4)
+            print(f"{x:{o}}|{fs[i]:{o}}|{cmlf:{o}}|{fx:{o}}|{x2:{o}}")
+        print('-'*len(header))
+        print(f"{sumx:{o}}|{sumf:{o}}|{'':{o}}|{sumfx:{o}}|{sumx2:{o}}")
+        print('')
+
+        quartlist=sum([[xs[i]]*fs[i] for i in range(len(xs))],[])
+        (Q1,q1),(Q2,q2),(Q3,q3)=qrt(quartlist,(sumf+1)/4),qrt(quartlist,(sumf+1)/2),qrt(quartlist,3*(sumf+1)/4)
+        print(f"Q1 pos = ({sumf}+1)/4 = {(sumf+1)/4}th")
+        print(f" => Q1 = {Q1}")
+        print(f"Q2 pos = ({sumf}+1)/2 = {(sumf+1)/2}th")
+        print(f" => Q2 = {Q2}")
+        print(f"Q3 pos = 3({sumf}+1)/4 = {3*(sumf+1)/4}th")
+        print(f" => Q3 = {Q3}")
+        lfence=q1-1.5*(q3-q1)
+        lfence=int(lfence) if lfence%1==0 else lfence
+        ufence=q3+1.5*(q3-q1)
+        ufence=int(ufence) if ufence%1==0 else ufence
+        print(f"\nLower fence = {q1} - 1.5({q3-q1}) = {lfence}")
+        print(f"Upper fence = {q3} + 1.5({q3-q1}) = {ufence}")
+        print('')
+        Q12=q2-q1
+        Q23=q3-q2
+        if Q12>Q23:
+            print(f"{Q12} > {Q23}")
+            print("Q2-Q1 > Q3-Q2 Skewed to the left")
+        elif Q12<Q23:
+            print(f"{Q12} < {Q23}")
+            print("Q2-Q1 < Q3-Q2 Skewed to the right")
+        else:
+            print(f"{Q12} = {Q23}")
+            print("Q2-Q1 = Q3-Q2 Symmetrical distribution")
+        print('')
 
         if path[1]=='p': # Population
             # Mean
@@ -363,20 +405,36 @@ while True:
 
             # Classes
             cs=[[cs0[0],cs0[1]],[cs0[2],cs0[3]]]
-            lltemp=cs0[3]+interval
+            lltemp=cs0[3]
             for x in cs0[4:]:
+                lltemp+=interval
                 if lltemp%1==0:
                     lltemp=int(lltemp)
                 cs.append([lltemp,x])
-                lltemp+=interval
-            
-            fs=[int(i) for i in f.split(" ")]
+                lltemp=x
             
             # Boundaries
             bs=[[A if (A:=x[0]-hinterval)%1!=0 else int(A),B if (B:=x[1]+hinterval)%1!=0 else B] for x in cs]
-
+            
             # Class sizes
             Cs=[A if (A:=x[1]-x[0])%1!=0 else int(A) for x in bs]
+            
+            if f:
+                fs=[int(i) for i in f.split(" ")]
+            else:
+                data=input("Data: ")
+                datas=[eval(i) for i in data.split(" ")]
+                fs=[0]*len(cs)
+                for i in datas:
+                    upperb=cs[0][1]+hinterval
+                    index=0
+                    while True:
+                        if i<upperb:
+                            fs[index]+=1
+                            break
+                        upperb+=Cs[index+1]
+                        index+=1
+            sumf=sum(fs)
 
             # Mid points
             ms=[A if (A:=sum(x)/2)%1!=0 else int(A) for x in cs]
@@ -389,7 +447,7 @@ while True:
                 cfs.append(cf)
 
             # Frequency densities: fds
-            fds=[A if (A:=fs[i]/Cs[i])%1!=0 else int(A) for i in range(len(fs))]
+            fds=[A if (A:=round(fs[i]/Cs[i],4))%1!=0 else int(A) for i in range(len(fs))]
 
             # fms
             fms=[A if (A:=round(fs[i]*ms[i],4))%1!=0 else int(A) for i in range(len(fs))]
@@ -399,18 +457,38 @@ while True:
             fm2s=[A if (A:=round(fs[i]*ms[i]**2,4))%1!=0 else int(A) for i in range(len(fs))]
             sumfm2s=A if (A:=round(sum(fm2s),4))%1!=0 else int(A)
 
+            print(f'')
+            print(f"{'Class':^7}|{'Boundaries':^12}|{'c':^5}|{'m':^7}|{'f':^5}|{'Cumulative f':^14}|{'fm':^7}|{'fm^2':^10}")
+            print(f"{'':-^7}+{'':-^12}+{'':-^5}+{'':-^7}+{'':-^5}+{'':-^14}+{'':-^7}+{'':-^10}")
+            for i in range(len(fs)):
+                print(f"{'{}-{}'.format(cs[i][0],cs[i][1]):^7}|{'{}-{}'.format(bs[i][0],bs[i][1]):^12}|{Cs[i]:^5}|{ms[i]:^7}|{fs[i]:^5}|{cfs[i]:^14}|{fms[i]:^7}|{fm2s[i]:^10}")
+            print(f"{'':-^7}+{'':-^12}+{'':-^5}+{'':-^7}+{'':-^5}+{'':-^14}+{'':-^7}+{'':-^10}")
+            print(f"{'':^7}|{'':^12}|{'':^5}|{'':^7}|{sumf:^5}|{'':^14}|{sumfms:^7}|{sumfm2s:^10}")
+            print('')
+
+            if input('Drawing histogram? ')!='':
+                print('')
+                rfs=[round(i/sumf,4) for i in fs]
+                ps=[round(i*100,2) for i in rfs]
+                print(f"{'Class':^7}|{'Boundaries':^12}|{'c':^7}|{'f':^5}|{'f density':^12}")
+                print(f"{'':-^7}+{'':-^12}+{'':-^7}+{'':-^5}+{'':-^12}")
+                for i in range(len(fs)):
+                    print(f"{'{}-{}'.format(cs[i][0],cs[i][1]):^7}|{'{}-{}'.format(bs[i][0],bs[i][1]):^12}|{Cs[i]:^7}|{fs[i]:^5}|{fds[i]:^12}")
+                print('')
+
         if input("Drawing ogive? ")!='':
             print('')
             crfs=[round(A,4) if (A:=i/sumf)%1!=0 else int(A) for i in cfs]
             cps=[round(A,4) if (A:=i*100)%1!=0 else int(A) for i in crfs]
             pc=[f"<{cs[0][0]-interval}",f"<{bs[0][0]}",0,0,0]
             print(f"{'Upper':^10}|{'Cumulative':^12}|{'Cumulative':^12}|{'Cumulative':^13}")
-            print(f"{'Boundaries':^10}|{'f':^12}|{'relative f':^12}|{'percentages':^13}")
+            print(f"{'Boundaries':^10}|{'frequency':^12}|{'relative f':^12}|{'percentage':^13}")
             print(f"{'':-^10}+{'':-^12}+{'':-^12}+{'':-^13}")
             print(f"{pc[1]:^10}|{pc[2]:^12}|{pc[3]:^12}|{pc[4]:^13}")
             for i in range(len(cfs)):
                 print(f"{'{}{}'.format('<',bs[i][1]):^10}|{cfs[i]:^12}|{crfs[i]:^12}|{cps[i]:^13}")
         print('')
+
         Q1pos,Q1txt,Q1=grpqrt('1/4')
         print(f"Q1 pos = {Q1pos}")
         print(f"Q1 = {Q1txt}")
@@ -423,9 +501,17 @@ while True:
         print(f"Q3 pos = {Q3pos}")
         print(f"Q3 = {Q3txt}")
         print(f"   = {Q3}\n")
+        print(f"IQR = {Q3} - {Q1} = {round(Q3-Q1,4)}\n")
+        while (predict:=input("Predict percent? "))!='':
+            xpos,Qxtxt,Qx=grpqrt(predict)
+            print(f"x pos = {xpos}")
+            print(f"x = {Qxtxt}")
+            print(f"  = {Qx}")
+            print('')
+        print('')
 
+        # Mode
         if given=='s':
-            # Mode
             modeindex=fs.index(max(fs))
             Lm=bs[modeindex][0]
             f_m=fs[modeindex]
@@ -433,10 +519,21 @@ while True:
             f_a=0 if modeindex+1==len(fs) else fs[modeindex+1]
             mode=round(Lm+(f_m-f_b)/(2*f_m-f_a-f_b)*size,4)
             print("Mode [Equal class width] >>>")
-            print(f"m = {bs[modeindex][0]} + ({f_m}-{f_b})/(({f_m}-{f_b})+({f_m}-{f_a})) * {size}")
+            print(f"Modal class = \"{cs[modeindex][0]}-{cs[modeindex][1]}\"")
+            print(f"M = {bs[modeindex][0]} + ({f_m}-{f_b})/(({f_m}-{f_b})+({f_m}-{f_a})) * {size}")
             print(f"  = {mode}")
         else:
-            pass
+            modeindex=fds.index(max(fds))
+            Lm=bs[modeindex][0]
+            p_m=fds[modeindex]
+            p_b=0 if modeindex==0 else fds[modeindex-1]
+            p_a=0 if modeindex+1==len(fs) else fds[modeindex+1]
+            C=A if (A:=bs[modeindex][1]-bs[modeindex][0])%1!=0 else int(A)
+            mode=round(Lm+(p_m-p_b)/(2*p_m-p_a-p_b)*C,4)
+            print("Mode [Unequal class width] >>>")
+            print(f"Modal class = \"{cs[modeindex][0]}-{cs[modeindex][1]}\"")
+            print(f"M = {bs[modeindex][0]} + ({p_m}-{p_b})/(({p_m}-{p_b})+({p_m}-{p_a})) * {C}")
+            print(f"  = {mode}")
         print('')
 
         print('-'*50)
@@ -475,6 +572,16 @@ while True:
             print(f"    = {var}")
 
             # Std dev
-            print(f"\nStandard deviation [Population] >>>")
+            print(f"\nStandard deviation [Sample] >>>")
             print(f"sigma = sqrt({var}) = {round(sqrt(var),4)}")
+        print('')
+        print(f"mean, median, mode = {mean}, {Q2}, {mode}")
+        if mean>Q2>mode:
+            print(f"mean > median > mode")
+            print(f"{mean} > {Q2} > {mode}")
+            print('skewed to the right (mean most right)')
+        elif mean<Q2<mode:
+            print(f"mean < median < mode")
+            print(f"{mean} < {Q2} < {mode}")
+            print('skewed to the left (mean most left)')
         print('')
