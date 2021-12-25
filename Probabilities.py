@@ -85,28 +85,28 @@ def n(mean=0,var=1,l=None,u=None):
     if l and u:
         if l<0 and u<0:
             print(f"= P(Z > {abs(u)}) - P(Z > {abs(l)})")
-            print(f"= {uu} - {ll} = {uu-ll:.4f} = {round((uu-ll)*100,4)}%")
+            print(f"= {uu} - {ll} = {uu-ll:.4f} => {round((uu-ll)*100,4)}%")
         elif l<0 and u>0:
             print(f"= 1 - P(Z > {abs(l)}) - P(Z > {u})")
-            print(f"= 1 - {ll} - {uui} = {1-ll-uui:.4f} = {round((1-ll-uui)*100,4)}%")
+            print(f"= 1 - {ll} - {uui} = {1-ll-uui:.4f} => {round((1-ll-uui)*100,4)}%")
         else:
             print(f"= P(Z > {l}) - P(Z > {u})")
-            print(f"= {lli} - {uui} = {lli-uui:.4f} = {round((lli-uui)*100,4)}%")
+            print(f"= {lli} - {uui} = {lli-uui:.4f} => {round((lli-uui)*100,4)}%")
         ans=norm.cdf(u)-norm.cdf(l)
     elif l!=None:
         if l<0:
             print(f"= 1 - P(Z > {abs(l)})")
-            print(f"= 1 - {ll} = {lli} = {round(lli*100,4)}%")
+            print(f"= 1 - {ll} = {lli} => {round(lli*100,4)}%")
         else:
-            print(f"\n= {lli} = {round(lli*100,4)}%")
+            print(f"\n= {lli} => {round(lli*100,4)}%")
         ans=1-norm.cdf(l)
     else:
         if u<0:
             print(f"= P(Z > {abs(u)})")
-            print(f"= {uu:.4f} = {round(uu*100,4)}%")
+            print(f"= {uu:.4f} => {round(uu*100,4)}%")
         else:
             print(f"= 1 - P(Z > {u})")
-            print(f"= 1 - {uui} = {1-uui:.4f} = {round((1-uui)*100,4)}%")
+            print(f"= 1 - {uui} = {1-uui:.4f} => {round((1-uui)*100,4)}%")
         ans=norm.cdf(u)
     print('-'*30)
     return ans

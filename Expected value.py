@@ -24,7 +24,6 @@ while True:
             xdecimal=f".{max(xchk)}f"
         else:
             xdecimal=''
-
         if '.' in str(Pxs[0]):
             pxchk=[len(str(i)[str(i).index('.')+1:]) for i in Pxs]
             pxdecimal=f".{max(pxchk)}f"
@@ -50,4 +49,5 @@ while True:
             #if opt.upper()=="S":
         print(f"sqrt({Varx}) = {round(sqrt(Varx),4)}")
         print('')
+        print('-'*40)
 
