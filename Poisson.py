@@ -1,5 +1,6 @@
 import traceback
 from math import *
+from scipy.stats import norm
 
 def p(lamb,x,mult=False):
     if mult==False:
@@ -44,6 +45,75 @@ def binr(n,p,*rs):
     print('-'*30)
     return sum([bin(n,p,r,False) for r in rs])
 
+l,m=0,1
+def ni(percent,mode):
+    if not mode:
+        print(f"P(Z < {round(norm.ppf(percent),4)}) = {percent}")
+    else:
+        print(f"P(Z > {round(-norm.ppf(percent),4)}) = {percent}")
+    print('-'*30)
+    return norm.ppf(percent) if not mode else -norm.ppf(percent)
+
+def nprinter(l,x,u):
+    txt='P('
+    if l!=None and u==None:
+        txt+=f"{x} > {l}"
+    elif l!=None:
+        txt+=f"{l} < {x}"
+    else:
+        txt+=x
+    if u!=None:
+        txt+=f" < {u}"
+    txt+=')'
+    return txt
+
+def n(mean=0,var=1,l=None,u=None):
+    print(f"X ~ N({mean}, {var}) -> {nprinter(l,'X',u)}")
+    if isinstance(var,str):
+        stddev=sqrt(eval(var))
+    else:
+        stddev=sqrt(var)
+    if l!=None:
+        l=round((l-mean)/stddev,2)
+        ll=round(norm.cdf(l),4)
+        lli=round(1-ll,4)
+    if u!=None:
+        u=round((u-mean)/stddev,2)
+        uu=round(norm.cdf(u),4)
+        uui=round(1-uu,4)
+    print(f"Converted: {nprinter(l,'Z',u)} ",end='')
+    if l and u:
+        if l<0 and u<0:
+            print(f"= P(Z > {abs(u)}) - P(Z > {abs(l)})")
+            print(f"= {uu} - {ll} = {uu-ll:.4f} = {round((uu-ll)*100,4)}%")
+        elif l<0 and u>0:
+            print(f"= 1 - P(Z > {abs(l)}) - P(Z > {u})")
+            print(f"= 1 - {ll} - {uui} = {1-ll-uui:.4f} = {round((1-ll-uui)*100,4)}%")
+        else:
+            print(f"= P(Z > {l}) - P(Z > {u})")
+            print(f"= {lli} - {uui} = {lli-uui:.4f} = {round((lli-uui)*100,4)}%")
+        ans=norm.cdf(u)-norm.cdf(l)
+    elif l!=None:
+        if l<0:
+            print(f"= 1 - P(Z > {abs(l)})")
+            print(f"= 1 - {ll} = {lli} = {round(lli*100,4)}%")
+        else:
+            print(f"\n= {lli} = {round(lli*100,4)}%")
+        ans=1-norm.cdf(l)
+    else:
+        if u<0:
+            print(f"= P(Z > {abs(u)})")
+            print(f"= {uu:.4f} = {round(uu*100,4)}%")
+        else:
+            print(f"= 1 - P(Z > {u})")
+            print(f"= 1 - {uui} = {1-uui:.4f} = {round((1-uui)*100,4)}%")
+        ans=norm.cdf(u)
+    print('-'*30)
+    return ans
+
+def nr(mean=0,var=1,l=None,u=None):
+    return n(mean,var,u=l)+n(mean,var,l=u)
+
 '''
 ==============================================
 print(''+')',
@@ -56,7 +126,12 @@ while (opt:=input(inp))!="":
     input("Q-")
     print(f"{'v v v':^{len(opt+inp)}}")
     try:
-        string=f"{opt.lower()} = {eval(opt.lower()):.4g}"
+        answer=eval(opt.lower())
+        if not isinstance(answer,str):
+            o='.4g'
+        else:
+            o=0
+        string=f"{opt.lower()} = {answer:{o}}"
         print(f"{string:^{len(opt+inp)}}")
     except:
         if input("error occurred. Display?")!='':

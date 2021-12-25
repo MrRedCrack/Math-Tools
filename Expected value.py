@@ -4,6 +4,7 @@ import traceback
 
 def fracchk(i):
     return Fraction(int(i.split('/')[0]),int(i.split('/')[1])) if '/' in i and '(' not in i else eval(i)
+
 while True:
     retry=False
     try:
@@ -18,23 +19,19 @@ while True:
         traceback.print_exc()
     print('')
     if not retry:
-        opt1=input("x has decimal? :")
-        if opt1=='f':
-            opt1=''
-        elif opt1:
-            opt1=f".{opt1}f"
+        if '.' in enter1:
+            xchk=[len(str(i)[str(i).index('.')+1:]) if i%1!=0 else 0 for i in xs]
+            xdecimal=f".{max(xchk)}f"
         else:
-            xs=[int(i) for i in xs]
-        opt2=input("P(x) decimal points? :")
-        if not opt2:
-            opt2=".2f"
-        elif opt2=='f':
-            opt2=''
-        else:
-            opt2=f".{opt2}f"
-        print('')
-        print(f"x    |"+"|".join([f"{str(i) if '/' in str(i) else i:^7{opt1}}" for i in xs]))
-        print(f"P(x) |"+"|".join([f"{str(i) if '/' in str(i) else i:^7{opt2}}" for i in Pxs]))
+            xdecimal=''
+
+        if '.' in str(Pxs[0]):
+            pxchk=[len(str(i)[str(i).index('.')+1:]) for i in Pxs]
+            pxdecimal=f".{max(pxchk)}f"
+        elif '/' in str(Pxs[0]):
+            pxdecimal=''
+        print(f"x    |"+"|".join([f"{str(i) if '/' in str(i) else i:^7{xdecimal}}" for i in xs]))
+        print(f"P(x) |"+"|".join([f"{str(i) if '/' in str(i) else i:^7{pxdecimal}}" for i in Pxs]))
         print('')
         #while (opt:=input("Option: "))!="":
         Ex=sum([num*Pxs[i] for i,num in enumerate(xs)])
@@ -53,5 +50,4 @@ while True:
             #if opt.upper()=="S":
         print(f"sqrt({Varx}) = {round(sqrt(Varx),4)}")
         print('')
-    if input("Continue? ").upper()=="N":
-        break
+

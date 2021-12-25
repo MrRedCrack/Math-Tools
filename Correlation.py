@@ -3,17 +3,18 @@ from fractions import Fraction
 
 def checkr(r):
     if r<-.75:
-        return "Strong negative correlation: -1 < r < -0.75"
+        t="Strong negative","-1 < r < -0.75"
     elif r<=-.65:
-        return "Moderate negative correlation: -0.75 <= r <= -0.65"
+        t="Moderate negative","-0.75 <= r <= -0.65"
     elif r<0:
-        return "Weak negative correlation: -0.65 < r < 0"
+        t="Weak negative","-0.65 < r < 0"
     elif r<.65:
-        return "Weak positive correlation: 0 < r < 0.65"
+        t="Weak positive","0 < r < 0.65"
     elif r<=.75:
-        return "Moderate postiive correlation: 0.65 <= r <= 0.75"
+        t="Moderate postiive","0.65 <= r <= 0.75"
     elif r<1:
-        return "Strong positive correlation: 0.75 < r < 1"
+        t="Strong positive","0.75 < r < 1"
+    return f"{t[0]} linear relationship: {t[1]}"
 
 while True:
     xs,ys=[],[]
@@ -38,6 +39,7 @@ while True:
         sumxy=int(x) if float(x:=input("sum xy: "))%1==0 else float(x)
         sumx2=int(x) if float(x:=input("sum x2: "))%1==0 else float(x)
         sumy2=int(x) if float(x:=input("sum y2: "))%1==0 else float(x)
+        print('')
     
     o="^8"
     header=f"{'x':{o}}|{'y':{o}}|{'xy':{o}}|{'x^2':{o}}|{'y^2':{o}}"
@@ -57,17 +59,17 @@ while True:
     print(f"S_XY = {sumxy} - {sumx}*{sumy}/{n} = {S_XY}")
     print('')
     
-    print("Correlation coefficient:")
-    r=S_XY/(sqrt(S_XX)*sqrt(S_YY)) # r value
-    print(f"r = {S_XY}/(sqrt({S_XX})*sqrt({S_YY})) = {r:.4g}")
+    print("Correlation coefficient >>>")
+    r=S_XY/(sqrt(S_XX*S_YY)) # r value
+    print(f"r = {S_XY}/(sqrt({S_XX} * {S_YY})) = {r:.4g}")
     print(checkr(r))
     print('')
-    print('Coefficient of determination:')
+    print('Coefficient of determination >>>')
     print(f"r^2 = ({r:.4g})^2 = {round(r,4)**2:.4g} -> {round(r,4)**2*100:.2f}% / {100-round(r,4)**2*100:.2f}%")
     print('')
     print('-'*50)
 
-    print("Regression calculation:")
+    print("Regression calculation >>>")
     if S_XY%1==0 and S_XX%1==0:
         b=Fraction(int(S_XY),int(S_XX)) 
         print(f"b = S_XY/S_XX = {b} = {round(float(b),4)}")
