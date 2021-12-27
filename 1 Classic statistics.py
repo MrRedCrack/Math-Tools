@@ -13,7 +13,7 @@ def midpoint(l,third=False):
         QindexB=int(len(l)/2)
         QindexA=QindexB-1
         Qindex2=QindexA*2+1
-        Q=(l[QindexA]+l[QindexB])/2
+        Q=round((l[QindexA]+l[QindexB])/2,4)
         ret=f"({l[QindexA]}+{l[QindexB]})/2 = {Q}",Q,QindexB,QindexB
     if third:
         Qindex2=-Qindex2-1
@@ -92,32 +92,33 @@ while True:
             print(f"\t{''.join(blanklisttop)}    {Q1txt}")
             print(f"\t{''.join([str(i) for i in datalist])}    {mediantxt}")
             print(f"\t{''.join(blanklist)}    {Q3txt}")
-            print(f"{' '*(len(''.join(blanklisttop))+12)}IQR = {Q3}-{Q1} = {Q3-Q1}")
-            print(f"{' '*(len(''.join(blanklisttop))+12)}semi-IQR = ({Q3}-{Q1})/2 = {round((Q3-Q1)/2,4)}")
+            IQR=round(Q3-Q1,4)
+            print(f"{' '*(len(''.join(blanklisttop))+12)}IQR = {Q3}-{Q1} = {IQR}")
+            print(f"{' '*(len(''.join(blanklisttop))+12)}semi-IQR = ({Q3}-{Q1})/2 = {round((IQR)/2,4)}")
             print(f"{' '*(len(''.join(blanklisttop))+12)}MQR = ({Q3}+{Q1})/2 = {round((Q3+Q1)/2,4)}")
             c=Counter(data)
             mode=[str(k) for k,v in c.items() if v == c.most_common(1)[0][1]]
             print(f"{' '*(len(''.join(blanklisttop))+12)}Mode = {', '.join(mode) if len(mode)!=len(data) else 'no mode'}")
             
-            lfence=Q1-1.5*(Q3-Q1)
+            lfence=Q1-1.5*(IQR)
             lfence=int(lfence) if lfence%1==0 else lfence
-            ufence=Q3+1.5*(Q3-Q1)
+            ufence=Q3+1.5*(IQR)
             ufence=int(ufence) if ufence%1==0 else ufence
-            print(f"\nLower fence = {Q1} - 1.5({Q3-Q1}) = {lfence}")
-            print(f"Upper fence = {Q3} + 1.5({Q3-Q1}) = {ufence}")
+            print(f"\nLower fence = {Q1} - 1.5({IQR}) = {lfence}")
+            print(f"Upper fence = {Q3} + 1.5({IQR}) = {ufence}")
             if any(outliers:=[str(x) for x in data if x<lfence or x>ufence]):
                 print(f"Outlier(s): {', '.join(outliers)}")
-            Q12=median-Q1
-            Q23=Q3-median
+            Q12=round(median-Q1,4)
+            Q23=round(Q3-median,4)
             if Q12>Q23:
                 print(f"{Q12} > {Q23}")
-                print("Q2-Q1 > Q3-Q2 Skewed to the left")
+                print("=> Q2-Q1 > Q3-Q2 Skewed to the left")
             elif Q12<Q23:
                 print(f"{Q12} < {Q23}")
-                print("Q2-Q1 < Q3-Q2 Skewed to the right")
+                print("=> Q2-Q1 < Q3-Q2 Skewed to the right")
             else:
                 print(f"{Q12} = {Q23}")
-                print("Q2-Q1 = Q3-Q2 Symmetrical distribution")
+                print("=> Q2-Q1 = Q3-Q2 Symmetrical distribution")
             print('')
 
             print(f"n: {n}")
@@ -179,16 +180,14 @@ while True:
             # Variance
             if (p:=(sigmax2-(sigmax**2)/n))%1 == 0:
                 var=Fraction(int(p),(n-1))
-                frac=True
             else:
                 var=round(p/(n-1),4)
-                frac=False
             print('\nVariance [Sample] >>>')
             print(f"s^2 = (Sigma(x^2) - Sigma(x)^2/n)/(n-1)")
             print(f"    = ({sigmax2} - ({sigmax}^2)/{n})/({n}-1)")
-            print(f"    = ({sigmax2} - {Fraction(sigmax**2,n) if sigmax2%1==0 else round(sigmax2/n,4)})/{n-1})")
+            print(f"    = ({sigmax2} - {Fraction(sigmax**2,n) if sigmax2%1==0 else round(sigmax2/n,4)})/{n-1}")
             print(f"    = {var}")
-            if frac:
+            if '/' in str(var):
                 print(f"    = {round(p/(n-1),4)}")
         
             # Std dev
@@ -244,7 +243,7 @@ while True:
         print(f" => Q2 = {Q2}")
         print(f"Q3 pos = 3({sumf}+1)/4 = {3*(sumf+1)/4}th")
         print(f" => Q3 = {Q3}")
-        lfence=q1-1.5*(q3-q1)
+        lfence=q1-1.5*(IQR)
         lfence=int(lfence) if lfence%1==0 else lfence
         ufence=q3+1.5*(q3-q1)
         ufence=int(ufence) if ufence%1==0 else ufence

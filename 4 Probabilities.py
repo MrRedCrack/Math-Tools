@@ -46,12 +46,13 @@ def binr(n,p,*rs):
     return sum([bin(n,p,r,False) for r in rs])
 
 l,m=0,1
-def ni(percent,mode):
+def ni(percent,mode=1,bar=True):
     if not mode:
         print(f"P(Z < {round(norm.ppf(percent),4)}) = {percent}")
     else:
         print(f"P(Z > {round(-norm.ppf(percent),4)}) = {percent}")
-    print('-'*30)
+    if bar:
+        print('-'*30)
     return norm.ppf(percent) if not mode else -norm.ppf(percent)
 
 def nprinter(l,x,u):
@@ -81,7 +82,7 @@ def n(mean=0,var=1,l=None,u=None):
         u=round((u-mean)/stddev,2)
         uu=round(norm.cdf(u),4)
         uui=round(1-uu,4)
-    print(f"Converted: {nprinter(l,'Z',u)} ",end='')
+    print(f"Converted: {nprinter(l,'Z',u)}")
     if l and u:
         if l<0 and u<0:
             print(f"= P(Z > {abs(u)}) - P(Z > {abs(l)})")
@@ -98,10 +99,10 @@ def n(mean=0,var=1,l=None,u=None):
             print(f"= 1 - P(Z > {abs(l)})")
             print(f"= 1 - {ll} = {lli} => {round(lli*100,4)}%")
         else:
-            print(f"\n= {lli} => {round(lli*100,4)}%")
+            print(f"= {lli} => {round(lli*100,4)}%")
         ans=1-norm.cdf(l)
     else:
-        if u<0:
+        if u<=0:
             print(f"= P(Z > {abs(u)})")
             print(f"= {uu:.4f} => {round(uu*100,4)}%")
         else:
@@ -113,6 +114,54 @@ def n(mean=0,var=1,l=None,u=None):
 
 def nr(mean=0,var=1,l=None,u=None):
     return n(mean,var,u=l)+n(mean,var,l=u)
+
+def conf(percent,mean,var):
+    if isinstance(var,str):
+        stddev=sqrt(eval(var))
+    else:
+        stddev=sqrt(var)
+    if isinstance(mean,str):
+        meantrue=round(eval(mean),4)
+    else:
+        meantrue=mean
+    alpha=round((100-percent)/100,4)
+    halpha=round(alpha/2,4)
+    print(f"alpha = {alpha}")
+    print(f"alpha/2 = {halpha}")
+    Z=round(ni(halpha,1,False),4)
+    val=round(Z*stddev,4)
+    print(f"=> Z_{halpha} = {Z}\n")
+    print(f"{percent}% confidence interval for mean:")
+    print(f"= {mean} ± {Z} * sqrt({var})")
+    print(f"= {meantrue} ± {val}")
+    print('-'*30)
+    return f"({round(meantrue-val,4)}, {round(meantrue+val,4)})"
+
+def confp(percent,p,size=None):
+    if isinstance(p,str):
+        ps=[int(A) if float(A)%1==0 else float(A) for A in p.split('/')]
+        nume,deno=ps
+        insert=p,f"{nume}*{deno-nume}/{deno}**2/{deno}"
+    else:
+        insert=p,f"{p}*{round(1-p,4)}/{size}"
+    return conf(percent,insert[0],insert[1])
+
+def ne(percent,E,stddev):
+    alpha=round((100-percent)/100,4)
+    halpha=round(alpha/2,4)
+    print(f"alpha = {alpha}")
+    print(f"alpha/2 = {halpha}")
+    Z=round(ni(halpha,1,False),4)
+    print(f"=> Z_{halpha} = {Z}\n")
+    if isinstance(stddev,str):
+        stddevtrue=eval(stddev)
+    else:
+        stddevtrue=stddev
+    print(f"n = ({Z} * {stddev}/{E})^2")
+    n=round((Z*stddevtrue/E)**2,4)
+    print(f"  = {n} => {ceil(n)}")
+    print('-'*30)
+    return str(ceil(n))
 
 '''
 ==============================================
@@ -128,7 +177,10 @@ while (opt:=input(inp))!="":
     try:
         answer=eval(opt.lower())
         if not isinstance(answer,str):
-            o='.4g'
+            if str(answer)[str(answer).index('.')+1]!='0':
+                o='.4f'
+            else:
+                o='.4g'
         else:
             o=0
         string=f"{opt.lower()} = {answer:{o}}"

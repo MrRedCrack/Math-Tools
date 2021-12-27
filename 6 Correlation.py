@@ -2,6 +2,7 @@ from math import sqrt
 from fractions import Fraction
 
 def checkr(r):
+    t='null','null'
     if r<-.75:
         t="Strong negative","-1 < r < -0.75"
     elif r<=-.65:
@@ -42,6 +43,7 @@ while True:
         print('')
     
     o="^8"
+    print(f"{n = }")
     header=f"{'x':{o}}|{'y':{o}}|{'xy':{o}}|{'x^2':{o}}|{'y^2':{o}}"
     print(header)
     for i,numx in enumerate(xs):
@@ -78,7 +80,7 @@ while True:
         xm=Fraction(sumx,n)
         a=ym-b*xm
         print(f"a = Sigma(y)/n - b * Sigma(x)/n")
-        print(f"  = {int(sumy)}/{n} - ({b} * {int(sumx)}/{n})")
+        print(f"  = {sumy}/{n} - ({b} * {sumx}/{n})")
         print(f"  = {a}")
         if '/' in str(a):
             print(f"  = {round(float(a),4)}")
@@ -92,7 +94,7 @@ while True:
         xm=sumx/n
         a=round(ym-b*xm,4)
         print(f"a = Sigma(y)/n - b * Sigma(x)/n")
-        print(f"  = {int(sumy)}/{n} - ({b} * {int(sumx)}/{n})")
+        print(f"  = {sumy}/{n} - ({b} * {sumx}/{n})")
         print(f"  = {a}")
         print('')
         print(f"regression line: y-cap = {a} + {b}x")
@@ -102,7 +104,7 @@ while True:
         if input("Drawing graph? : ")!="":
             print("\nline:")
             print(f"x    |{min(xs):^8}|{max(xs):^8}|")
-            print(f"y-cap|{round(a+b*min(xs),2):^8}|{round(a+b*max(xs),2):^8}|")
+            print(f"y-cap|{float(round(a+b*min(xs),2)):^8}|{float(round(a+b*max(xs),2)):^8}|")
             print("\ncoordinates:")
             coords=[(x,ys[i]) for i,x in enumerate(xs)]
             coords.sort(key=lambda x:x[0])
@@ -111,6 +113,6 @@ while True:
         print('')
     print('-'*50)
     while (opt:=input("Predict: "))!='':
-        opt=float(opt)
+        opt=float(opt) if float(opt)%1!=0 else int(opt)
         print(f"y-hat = {a} + {b}({opt}) = {a+b*opt:.4f}")
         print('')
