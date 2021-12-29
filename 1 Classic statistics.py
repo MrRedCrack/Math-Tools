@@ -243,12 +243,14 @@ while True:
         print(f" => Q2 = {Q2}")
         print(f"Q3 pos = 3({sumf}+1)/4 = {3*(sumf+1)/4}th")
         print(f" => Q3 = {Q3}")
+        IQR=q3-q1
+        print(f"IQR = {q3} - {q1} = {IQR}")
         lfence=q1-1.5*(IQR)
         lfence=int(lfence) if lfence%1==0 else lfence
-        ufence=q3+1.5*(q3-q1)
+        ufence=q3+1.5*(IQR)
         ufence=int(ufence) if ufence%1==0 else ufence
-        print(f"\nLower fence = {q1} - 1.5({q3-q1}) = {lfence}")
-        print(f"Upper fence = {q3} + 1.5({q3-q1}) = {ufence}")
+        print(f"\nLower fence = {q1} - 1.5({IQR}) = {lfence}")
+        print(f"Upper fence = {q3} + 1.5({IQR}) = {ufence}")
         print('')
         Q12=q2-q1
         Q23=q3-q2

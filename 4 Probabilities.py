@@ -131,7 +131,7 @@ def conf(percent,mean,var):
     Z=round(ni(halpha,1,False),4)
     val=round(Z*stddev,4)
     print(f"=> Z_{halpha} = {Z}\n")
-    print(f"{percent}% confidence interval for mean:")
+    print(f"{percent}% CI_miu/p")
     print(f"= {mean} ± {Z} * sqrt({var})")
     print(f"= {meantrue} ± {val}")
     print('-'*30)

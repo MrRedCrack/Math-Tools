@@ -63,7 +63,7 @@ while True:
     
     print("Correlation coefficient >>>")
     r=S_XY/(sqrt(S_XX*S_YY)) # r value
-    print(f"r = {S_XY}/(sqrt({S_XX} * {S_YY})) = {r:.4g}")
+    print(f"r = {S_XY}/sqrt({S_XX} * {S_YY}) = {r:.4g}")
     print(checkr(r))
     print('')
     print('Coefficient of determination >>>')
@@ -72,34 +72,38 @@ while True:
     print('-'*50)
 
     print("Regression calculation >>>")
-    if S_XY%1==0 and S_XX%1==0:
-        b=Fraction(int(S_XY),int(S_XX)) 
-        print(f"b = S_XY/S_XX = {b} = {round(float(b),4)}")
-        print('')
-        ym=Fraction(sumy,n)
-        xm=Fraction(sumx,n)
-        a=ym-b*xm
-        print(f"a = Sigma(y)/n - b * Sigma(x)/n")
-        print(f"  = {sumy}/{n} - ({b} * {sumx}/{n})")
-        print(f"  = {a}")
-        if '/' in str(a):
-            print(f"  = {round(float(a),4)}")
-        print('')
-        print(f"regression line: y-cap = {a} + {b}x")
+    dp=input("Decimal places: ")
+    if dp!='':
+        dp=int(dp)
     else:
-        b=round(S_XY/S_XX,4)
-        print(f"b = S_XY/S_XX = {S_XY}/{S_XX} = {b}")
-        print('')
-        ym=sumy/n
-        xm=sumx/n
-        a=round(ym-b*xm,4)
-        print(f"a = Sigma(y)/n - b * Sigma(x)/n")
-        print(f"  = {sumy}/{n} - ({b} * {sumx}/{n})")
-        print(f"  = {a}")
-        print('')
-        print(f"regression line: y-cap = {a} + {b}x")
+        dp=4
+    b=round(round(S_XY/S_XX,dp+5),dp)
+    print(f"b = S_XY/S_XX = {S_XY}/{S_XX} = {b}")
     print('')
-
+    ym=sumy/n
+    xm=sumx/n
+    a=round(round(ym-b*xm,dp+5),dp)
+    print(f"a = Sigma(y)/n - b * Sigma(x)/n")
+    print(f"  = {sumy}/{n} - ({b} * {sumx}/{n})")
+    print(f"  = {a}")
+    print('')
+    print(f"regression line: y-hat = {a} + {b}x")
+    if S_XY%1==0 and S_XX%1==0:
+        if input("\nFraction form? ")!='':
+            print('-'*40)
+            b=Fraction(int(S_XY),int(S_XX)) 
+            print(f"b = S_XY/S_XX = {b} = {round(float(b),4)}")
+            print('')
+            ym=Fraction(sumy,n)
+            xm=Fraction(sumx,n)
+            a=ym-b*xm
+            print(f"a = Sigma(y)/n - b * Sigma(x)/n")
+            print(f"  = {sumy}/{n} - ({b} * {sumx}/{n})")
+            print(f"  = {a}")
+            if '/' in str(a):
+                print(f"  = {round(float(a),4)}")
+            print('')
+            print(f"regression line: y-cap = {a} + {b}x")
     if xs:
         if input("Drawing graph? : ")!="":
             print("\nline:")
