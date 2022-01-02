@@ -188,7 +188,7 @@ while (opt:=input(inp))!="":
     except:
         if input("error occurred. Display?")!='':
             traceback.print_exc()
-    print('\n')
+    print('\n\n')
 
 
 
