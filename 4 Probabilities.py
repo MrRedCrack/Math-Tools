@@ -177,7 +177,7 @@ while (opt:=input(inp))!="":
     try:
         answer=eval(opt.lower())
         if not isinstance(answer,str):
-            if str(answer)[str(answer).index('.')+1]!='0':
+            if str(answer)[str(answer).index('.')+1]!='0' or answer>=1:
                 o='.4f'
             else:
                 o='.4g'
