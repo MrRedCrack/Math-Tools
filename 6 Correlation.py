@@ -26,8 +26,8 @@ while True:
         y=input("ys: ")
         ys=[int(i) if float(i)%1==0 else float(i) for i in y.split(" ")]
         print('')
-        sumx=sum(xs)
-        sumy=sum(ys)
+        sumx=round(sum(xs),5)
+        sumy=round(sum(ys),5)
         sumxy=round(sum([round(p*ys[q],4) for q,p in enumerate(xs)]),4)
         sumx2=round(sum([round(p**2,4) for p in xs]),4)
         sumy2=round(sum([round(p**2,4) for p in ys]),4)
