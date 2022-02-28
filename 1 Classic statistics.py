@@ -483,7 +483,7 @@ while True:
             cps=[round(A,4) if (A:=i*100)%1!=0 else int(A) for i in crfs]
             pc=[f"<{cs[0][0]-interval}",f"<{bs[0][0]}",0,0,0]
             print(f"{'Upper':^10}|{'Cumulative':^12}|{'Cumulative':^12}|{'Cumulative':^13}")
-            print(f"{'Boundaries':^10}|{'frequency':^12}|{'relative f':^12}|{'percentage':^13}")
+            print(f"{'Boundary':^10}|{'frequency':^12}|{'relative f':^12}|{'percentage':^13}")
             print(f"{'':-^10}+{'':-^12}+{'':-^12}+{'':-^13}")
             print(f"{pc[1]:^10}|{pc[2]:^12}|{pc[3]:^12}|{pc[4]:^13}")
             for i in range(len(cfs)):
