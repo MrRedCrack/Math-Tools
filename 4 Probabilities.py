@@ -12,6 +12,7 @@ def p(lamb,x,mult=False):
 def pt(lamb,min,max):
     print(f"X ~ Po({lamb}) -> ",end='')
     print(' + '.join([f"P(X = {i})" for i in range(min,max+1)]))
+    ans=sum([p(lamb,i,True) for i in range(min,max+1)])
     for i in range(min,max+1):
         if i==min:
             print(f"steps: e^-{lamb} (",end='')
@@ -24,9 +25,9 @@ def pt(lamb,min,max):
                 print(" +",end=' ')
             print(f"{lamb}^{i}/{i}!",end='')
         if i==max:
-            print(")")
+            print(f")  = {ans:.4f}")
     print('-'*30)
-    return sum([p(lamb,i,True) for i in range(min,max+1)])
+    return ans
 
 def bin(n,p,r,disp=True):
     if disp:
@@ -171,7 +172,7 @@ print(''+')',
 '''
 
 inp="Evaluate: "
-while (opt:=input(inp))!="":
+while (opt:=input(inp))!="" and len(opt)<50:
     input("Q-")
     print(f"{'v v v':^{len(opt+inp)}}")
     try:
